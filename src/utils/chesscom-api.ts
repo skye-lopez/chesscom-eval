@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { Axios, AxiosError, isAxiosError } from "axios";
 
 export interface Game {
     black: {
@@ -29,19 +29,44 @@ export interface Game {
     uuid: string
 }
 
+export interface ChessComError {
+    code: number
+    message: string
+}
+
+export interface RecentGamesResponse {
+    games: Game[]
+    status: number | undefined
+    message: string | undefined
+}
+
 // Gets all games within the past month by username.
-export async function getRecentGamesByUsername(username: string): Promise<Game[]> {
-    const now = new Date();
-    const url = `https://api.chess.com/pub/player/${username}/games/${now.getFullYear()}/${now.getMonth() + 1}`;
-    const { status, data: { games } } = (await axios.get(url));
+export async function getRecentGamesByUsername(username: string): Promise<RecentGamesResponse> {
+    try {
+        const now = new Date();
+        const url = `https://api.chess.com/pub/player/${username}/games/${now.getFullYear()}/${now.getMonth() + 1}`;
+        const { status, data: { games } } = (await axios.get(url));
+        const filteredGames = games.filter((game: Game) => (game.rules === "chess"));
 
-    if (status !== 200) {
-        // TODO: Handle error;
+        return {
+            games: filteredGames,
+            status: status,
+            message: "",
+        };
+    } catch (e) {
+        if (isAxiosError(e)) {
+            const error = e as AxiosError;
+            const chessComError = error?.response?.data as ChessComError;
+            return {
+                games: [],
+                status: error.status,
+                message: chessComError.message || error.message,
+            }
+        }
+        return {
+            games: [],
+            status: 500,
+            message: "Internal error",
+        }
     }
-
-    // we want to filter for the following:
-    // - Games that are "chess" e.g., not "chess960"
-    // - TODO: Games that are completed (open game eval could lead to cheating.)
-
-    return games.filter((game: Game) => (game.rules === "chess"));
 }
