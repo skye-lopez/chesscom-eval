@@ -46,7 +46,7 @@ export async function getRecentGamesByUsername(username: string): Promise<Recent
         const now = new Date();
         const url = `https://api.chess.com/pub/player/${username}/games/${now.getFullYear()}/${now.getMonth() + 1}`;
         const { status, data: { games } } = (await axios.get(url));
-        const filteredGames = games.filter((game: Game) => (game.rules === "chess"));
+        const filteredGames = games.filter((game: Game) => (game.rules === "chess")).reverse();
 
         return {
             games: filteredGames,

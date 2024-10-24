@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Game, getRecentGamesByUsername } from "../utils/chesscom-api";
+import GameSearchResult from "./GameSearchResult";
 
-export default function GameSearch() {
+interface GameSearchProps {
+    setGameInfo: Function
+}
+
+export default function GameSearch({ setGameInfo }: GameSearchProps) {
     const [username, setUsername] = useState<string>("");
     const [searchInProgress, setSearchInProgress] = useState<boolean>(false);
     const [searchResults, setSearchResults] = useState<Game[]>([]);
@@ -34,14 +39,17 @@ export default function GameSearch() {
 
     return (
         <Container>
-            <h1>Search for games by chess.com username</h1>
-            <Input
-                value={username}
-                onChange={handleInput}
-                onKeyDown={handleInputSearch}
-            />
-            <p>{searchInProgress.toString()}</p>
-            <p>{searchResults[0]?.eco}</p>
+            <SearchContainer>
+                <h1>Search for games by chess.com username</h1>
+                <Input
+                    value={username}
+                    onChange={handleInput}
+                    onKeyDown={handleInputSearch}
+                />
+            </SearchContainer>
+            <ResultsContainer>
+                {searchResults.map((g, key) => <GameSearchResult setGameInfo={setGameInfo} game={g} key={key} />)}
+            </ResultsContainer>
         </Container>
     );
 }
@@ -52,3 +60,11 @@ const Container = styled.div`
 `;
 
 const Input = styled.input``;
+
+const SearchContainer = styled.div`
+`;
+
+const ResultsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
