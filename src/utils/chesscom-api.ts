@@ -29,6 +29,7 @@ export interface Game {
     uuid: string
 }
 
+// Gets all games within the past month by username.
 export async function getRecentGamesByUsername(username: string): Promise<Game[]> {
     const now = new Date();
     const url = `https://api.chess.com/pub/player/${username}/games/${now.getFullYear()}/${now.getMonth() + 1}`;
@@ -38,5 +39,9 @@ export async function getRecentGamesByUsername(username: string): Promise<Game[]
         // TODO: Handle error;
     }
 
-    return games;
+    // we want to filter for the following:
+    // - Games that are "chess" e.g., not "chess960"
+    // - TODO: Games that are completed (open game eval could lead to cheating.)
+
+    return games.filter((game: Game) => (game.rules === "chess"));
 }
