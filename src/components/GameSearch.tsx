@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Game, getRecentGamesByUsername } from "../utils/chesscom-api";
 
 export default function GameSearch() {
@@ -34,21 +34,78 @@ export default function GameSearch() {
 
     return (
         <Container>
-            <h1>Search for games by chess.com username</h1>
-            <Input
-                value={username}
-                onChange={handleInput}
-                onKeyDown={handleInputSearch}
-            />
-            <p>{searchInProgress.toString()}</p>
-            <p>{searchResults[0]?.eco}</p>
+            <SearchAndTitle>
+                <Title>chess.com game review</Title>
+                <InputContainer>
+                    <InputLabel>
+                        <InputText>username</InputText>
+                    </InputLabel>
+                    <Input
+                        value={username}
+                        onChange={handleInput}
+                        onKeyDown={handleInputSearch}
+                    />
+                </InputContainer>
+            </SearchAndTitle>
         </Container>
     );
 }
 
+const rainbow = keyframes`
+    0% { background-position: 0% 82% }
+    50% { background-position: 100% 19% }
+    100% { background-position: 0% 82% }
+`;
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+    background: linear-gradient(124deg, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background-size: 1800% 1800%;
+    animation: ${rainbow} 18s ease infinite;
 `;
 
-const Input = styled.input``;
+const SearchAndTitle = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+`;
+
+const Title = styled.h1`
+    color: whitesmoke;
+`;
+
+const InputContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 10px;
+    padding: 0px 10px;
+    margin-top: 10px;
+    width: 100%;
+    height: 100%;
+`;
+
+const InputLabel = styled.div`
+    border-right: 2px solid black;
+    display: flex;
+`;
+
+const InputText = styled.p`
+    font-weight: bold;
+    margin-right: 10px;
+`;
+
+const Input = styled.input`
+    border-radius: 10px;
+    border: transparent;
+    background: transparent;
+    padding: 10px;
+    font-weight: 500;
+    font-size: 18px;
+`;
